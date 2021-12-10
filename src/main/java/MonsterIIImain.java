@@ -93,14 +93,14 @@ public class MonsterIIImain {
                             terminal.putCharacter(block);
                             terminal.setCursorPosition(rok + k, j-1);
                             terminal.putCharacter(' ');
-                            wallPositions[k].x = rok + k;
-                            wallPositions[k].y = j;
+                            wallPositions[k] = new Position(rok + k, j);
+                            //wallPositions[k].y = j;
                         }
                         j++;
                         //System.out.println(j);
                         for (Position go : wallPositions ) {
 
-                             if (wallPositions[go].getX() == x) {
+                             if (go.getX() == x) {
                                  System.out.println("Game Over");
                              }
                         }
