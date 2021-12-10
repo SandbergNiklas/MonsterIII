@@ -78,7 +78,9 @@ public class MonsterIIImain {
         int i = 0;
         int j = 0;
         int rok = ThreadLocalRandom.current().nextInt(100);
+
         Position[] wallPositions = new Position[10];
+
         boolean continueReadingInput = true;
         while (continueReadingInput) {
             KeyStroke keyStroke = null;
@@ -86,25 +88,32 @@ public class MonsterIIImain {
             do {
                 Thread.sleep(5); // might throw InterruptedException
                 keyStroke = terminal.pollInput();
-                if ( i % 100 == 0) {
+                if (i % 100 == 0) {
                     if (j < 100) {
-                        for (int k = 0; k< 10; k++) {
+                        for (int k = 0; k < 10; k++) {
                             terminal.setCursorPosition(rok + k, j);
                             terminal.putCharacter(block);
-                            terminal.setCursorPosition(rok + k, j-1);
+                            terminal.setCursorPosition(rok + k, j - 1);
                             terminal.putCharacter(' ');
-                            wallPositions[k].x = rok + k;
-                            wallPositions[k].y = j;
+                            wallPositions[k] = new Position(rok + k, j);
+                            //wallPositions[k].setX(rok+k);
+                            //wallPositions[k].setY(j);
                         }
                         j++;
                         //System.out.println(j);
-                        for (Position go : wallPositions ) {
+                        for (Position go : wallPositions) {
 
-                             if (wallPositions[go].getX() == x) {
-                                 System.out.println("Game Over");
-                             }
+                            if (go.getX() == x && go.getY() == y) {
+                                System.out.println("Game Over");
+                                //Ändring:
+                                continueReadingInput = false;
+                                break;
+                            }
+
                         }
-
+                        if (continueReadingInput == false) {
+                            break;
+                        }
 
                         terminal.flush();
                     }
@@ -115,57 +124,68 @@ public class MonsterIIImain {
             } while (keyStroke == null);
 
 
+            if (keyStroke != null) {
+                KeyType type = keyStroke.getKeyType();
+                Character c = keyStroke.getCharacter();
 
-            KeyType type = keyStroke.getKeyType();
-            Character c = keyStroke.getCharacter();
-
-            //System.out.println("keyStroke.getKeyType: " + type + "keyStroke.getCharacter(): " + c);
-            if (c == Character.valueOf('q')) {
-                continueReadingInput = false;
-                terminal.close();
-                System.out.println("quit");
-            }
-            int oldX = x;
-            int oldY = y;
-            switch (keyStroke.getKeyType()) {
-                case ArrowDown:
-                    y += 1;
-                    break;
-                case ArrowUp:
-                    y -= 1;
-                    break;
-                case ArrowRight:
-                    x += 1;
-                    break;
-                case ArrowLeft:
-                    x -= 1;
-                    break;
-            }
-            //detect if player tries to run into obstacle
-            boolean chrashIntoObstacle = false;
-            for (Position p : obstacles) {
-                if (p.x == x && p.y == y) {
-                    chrashIntoObstacle = true;
+                //System.out.println("keyStroke.getKeyType: " + type + "keyStroke.getCharacter(): " + c);
+                if (c == Character.valueOf('q')) {
+                    continueReadingInput = false;
+                    terminal.close();
+                    System.out.println("quit");
                 }
-            }
-            if (chrashIntoObstacle) {
-                x = oldX;
-                y = oldY;
-            }
-            else {
+                int oldX = x;
+                int oldY = y;
+                switch (keyStroke.getKeyType()) {
+                    case ArrowDown:
+                        y += 1;
+                        break;
+                    case ArrowUp:
+                        y -= 1;
+                        break;
+                    case ArrowRight:
+                        x += 1;
+                        break;
+                    case ArrowLeft:
+                        x -= 1;
+                        break;
+                }
+                //detect if player tries to run into obstacle
+                boolean chrashIntoObstacle = false;
+                for (Position p : obstacles) {
+                    if (p.x == x && p.y == y) {
+                        chrashIntoObstacle = true;
+                    }
+                }
+                if (chrashIntoObstacle) {
+                    x = oldX;
+                    y = oldY;
+                } else {
 
-                terminal.setCursorPosition(oldX, oldY);
-                terminal.putCharacter(' ');
-                terminal.setCursorPosition(x, y);
-                terminal.putCharacter(player);
-            }
-            //check if player runs into bomb
-            if (bombPosition.x == x && bombPosition.y == y) {
-                terminal.close();
-            }
-            terminal.flush();
+                    terminal.setCursorPosition(oldX, oldY);
+                    terminal.putCharacter(' ');
+                    terminal.setCursorPosition(x, y);
+                    terminal.putCharacter(player);
+                }
+                //check if player runs into bomb
+                if (bombPosition.x == x && bombPosition.y == y) {
+                    terminal.close();
+                }
+                terminal.flush();
 
+            }
         }
+
+        terminal.setCursorPosition(25,25);
+        String messageGO = "GAME OVER. YOU LOOSE!";
+        for (int ind = 0; ind < messageGO.length(); ind++) {
+            terminal.putCharacter(messageGO.charAt(ind));
+        }
+
+        terminal.flush();
+
+
+        // Byt ut "B" till att loopa över message
 
 
 
