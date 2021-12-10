@@ -1,4 +1,5 @@
 
+import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.input.KeyStroke;
 import com.googlecode.lanterna.input.KeyType;
 import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
@@ -7,9 +8,12 @@ import com.googlecode.lanterna.terminal.Terminal;
 import java.util.Random;
 
 
+
 public class MonsterIIImain {
     public static void main(String[] args) throws Exception {
+        TerminalSize ts = new TerminalSize(100, 120);
         DefaultTerminalFactory terminalFactory = new DefaultTerminalFactory();
+        terminalFactory.setInitialTerminalSize(ts);
         Terminal terminal = terminalFactory.createTerminal();
         terminal.setCursorVisible(false);
 
@@ -20,6 +24,8 @@ public class MonsterIIImain {
         final char bomb = 'O';
         terminal.setCursorPosition(x, y);
         terminal.putCharacter(player);
+        String wall = String.valueOf(block);
+        wall = wall.repeat(10);
 
 
         //create obstacles array
@@ -32,11 +38,21 @@ public class MonsterIIImain {
             terminal.setCursorPosition(p.x, p.y);
             terminal.putCharacter(block);
         }
+
+
         // Try to put obstacle in different places
         Random ro = new Random();
-        Position obstaclePosition = new Position(ro.nextInt(80), ro.nextInt(24));
+        Position obstaclePosition = new Position(ro.nextInt(120), ro.nextInt(100));
         terminal.setCursorPosition(obstaclePosition.x, obstaclePosition.y);
         terminal.putCharacter(block);
+
+          int randomKolumn = ro.nextInt(110);
+    /*
+        for (int i = 0; i < wall.length(); i++) {
+            terminal.setCursorPosition(randomKolumn+i, 0);
+            terminal.putCharacter(wall.charAt(i));
+        }*/
+        terminal.flush();
 
         /*
         //create obstacles array2
@@ -58,18 +74,38 @@ public class MonsterIIImain {
 
         terminal.flush();
         //Task 11
+        int i = 0;
+        int j = 0;
         boolean continueReadingInput = true;
         while (continueReadingInput) {
             KeyStroke keyStroke = null;
+
             do {
                 Thread.sleep(5); // might throw InterruptedException
                 keyStroke = terminal.pollInput();
+                if ( i % 100 == 0) {
+                    if (j < 100) {
+                        for (int k = 0; k< 10; k++) {
+                            terminal.setCursorPosition(k, j);
+
+                            terminal.putCharacter(block);
+                            terminal.setCursorPosition(k, j-1);
+                            terminal.putCharacter(' ');
+                        }
+                        j++;
+                        System.out.println(j);
+                        terminal.flush();
+                    }
+
+
+                }
+                i++;
             } while (keyStroke == null);
 
             KeyType type = keyStroke.getKeyType();
             Character c = keyStroke.getCharacter();
 
-            System.out.println("keyStroke.getKeyType: " + type + "keyStroke.getCharacter(): " + c);
+            //System.out.println("keyStroke.getKeyType: " + type + "keyStroke.getCharacter(): " + c);
             if (c == Character.valueOf('q')) {
                 continueReadingInput = false;
                 terminal.close();
