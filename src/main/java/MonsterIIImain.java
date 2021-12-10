@@ -6,6 +6,7 @@ import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
 import com.googlecode.lanterna.terminal.Terminal;
 
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 
 
@@ -40,14 +41,14 @@ public class MonsterIIImain {
         }
 
 
-        // Try to put obstacle in different places
-        Random ro = new Random();
+        // Try to put obstacle in different places tar bort 1 block random
+        Random ro = new Random();/*
         Position obstaclePosition = new Position(ro.nextInt(120), ro.nextInt(100));
         terminal.setCursorPosition(obstaclePosition.x, obstaclePosition.y);
         terminal.putCharacter(block);
-
+           */
           int randomKolumn = ro.nextInt(110);
-    /*
+/*
         for (int i = 0; i < wall.length(); i++) {
             terminal.setCursorPosition(randomKolumn+i, 0);
             terminal.putCharacter(wall.charAt(i));
@@ -73,9 +74,11 @@ public class MonsterIIImain {
         terminal.putCharacter(bomb);
 
         terminal.flush();
-        //Task 11
+        //Moving wall
         int i = 0;
         int j = 0;
+        int rok = ThreadLocalRandom.current().nextInt(100);
+        Position[] wallPositions = new Position[10];
         boolean continueReadingInput = true;
         while (continueReadingInput) {
             KeyStroke keyStroke = null;
@@ -86,14 +89,23 @@ public class MonsterIIImain {
                 if ( i % 100 == 0) {
                     if (j < 100) {
                         for (int k = 0; k< 10; k++) {
-                            terminal.setCursorPosition(k, j);
-
+                            terminal.setCursorPosition(rok + k, j);
                             terminal.putCharacter(block);
-                            terminal.setCursorPosition(k, j-1);
+                            terminal.setCursorPosition(rok + k, j-1);
                             terminal.putCharacter(' ');
+                            wallPositions[k].x = rok + k;
+                            wallPositions[k].y = j;
                         }
                         j++;
-                        System.out.println(j);
+                        //System.out.println(j);
+                        for (Position go : wallPositions ) {
+
+                             if (wallPositions[go].getX() == x) {
+                                 System.out.println("Game Over");
+                             }
+                        }
+
+
                         terminal.flush();
                     }
 
@@ -101,6 +113,8 @@ public class MonsterIIImain {
                 }
                 i++;
             } while (keyStroke == null);
+
+
 
             KeyType type = keyStroke.getKeyType();
             Character c = keyStroke.getCharacter();
@@ -152,6 +166,7 @@ public class MonsterIIImain {
             terminal.flush();
 
         }
+
 
 
     }
